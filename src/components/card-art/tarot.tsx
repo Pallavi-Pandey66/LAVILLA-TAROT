@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { OracleCardData } from "@/data/deck";
 import { Art, Rays, starPoints, type ArtProps } from "./primitives";
 
-const Star = ({ x = 50, y = 30, r = 9, n = 4 }: { x?: number; y?: number; r?: number; n?: number }) => <polygon points={starPoints(x, y, n, r, r * .4)} />;
+const Star = ({ x = 50, y = 30, r = 9, n = 4 }: { x?: number | undefined; y?: number | undefined; r?: number; n?: number }) => <polygon points={starPoints(x, y, n, r, r * .4)} />;
 const Sun = ({ x = 50, y = 25, r = 10 }: { x?: number; y?: number; r?: number }) => <><circle cx={x} cy={y} r={r} /><Rays cx={x} cy={y} r1={r + 3} r2={r + 9} count={12} alt={r + 6} /></>;
 const Moon = () => <path d="M56 10 A13 13 0 1 0 66 31 A12 12 0 0 1 56 10Z" />;
 const Infinity = () => <path d="M50 20 C28 0 20 38 50 20 C80 0 72 38 50 20Z" />;
@@ -46,28 +46,56 @@ function Minor({ card }: { card: OracleCardData }) {
   const rank = card.number;
   const Symbol = card.suit === "wands" ? Wand : card.suit === "cups" ? Cup : card.suit === "swords" ? Sword : Pentacle;
   const count = Math.min(rank, 10);
-  const positions = Array.from({ length: count }, (_, i) => ({
+  let positions = Array.from({ length: count }, (_, i) => ({
     x: count === 1 ? 50 : 26 + (i % (count > 6 ? 3 : 2)) * (count > 6 ? 24 : 48),
     y: count === 1 ? 52 : 32 + Math.floor(i / (count > 6 ? 3 : 2)) * (count > 6 ? 16 : 20),
   }));
+  if (card.suit === "wands" && [5,7,8,9,10].includes(rank)) {
+    positions = Array.from({length: count}, (_, i) => ({x: 18 + i * 64 / Math.max(1,count - 1), y: rank === 7 && i === 6 ? 24 : rank === 8 ? 24 + i * 6 : 56}));
+  }
+  if (card.suit === "cups" && [3,6,7,9,10].includes(rank)) {
+    positions = Array.from({length: count}, (_, i) => ({x: 15 + i * 70 / Math.max(1,count - 1), y: 55 - 15 * Math.sin(i * Math.PI / Math.max(1,count - 1))}));
+  }
+  if (card.suit === "pentacles" && rank === 2) positions = [{x:27,y:50},{x:73,y:50}];
+  if (card.suit === "pentacles" && rank === 4) positions = [{x:50,y:18},{x:50,y:50},{x:26,y:80},{x:74,y:80}];
+  if (card.suit === "pentacles" && rank === 8) positions = Array.from({length:8},(_,i)=>({x:50,y:10+i*11}));
+  if (card.suit === "pentacles" && rank === 10) positions = [{x:50,y:8},{x:25,y:23},{x:75,y:23},{x:50,y:38},{x:25,y:51},{x:75,y:51},{x:50,y:64},{x:25,y:77},{x:75,y:77},{x:50,y:92}];
   if (rank > 10) return <>
     {rank === 11 ? <Star y={22} /> : rank === 12 ? <path d="M37 28 L50 15 L63 28" /> : <Crown queen={rank === 13} />}
     <g transform="translate(50 66) scale(1.35)"><Symbol /></g>
   </>;
   return <>
-    {positions.map(({x,y},i)=><g key={i} transform={`translate(${x} ${y}) rotate(${card.suit==='wands' && rank===8 ? 40 : card.suit==='cups' && rank===5 && i<3 ? 180 : 0}) scale(${rank===1?1.7:card.suit==='pentacles'?.9:.65})`}><Symbol /></g>)}
+    {positions.map(({x,y},i)=><g key={i} transform={`translate(${x} ${y}) rotate(${card.suit==='wands' && rank===8 ? 40 : card.suit==='wands' && [2,5,10].includes(rank) ? (i-count/2)*12 : card.suit==='cups' && rank===5 && i<3 ? 180 : card.suit==='swords' && [5,7].includes(rank) && i<3 ? 65 : 0}) scale(${rank===1?1.7:card.suit==='pentacles'&&rank===8?.55:card.suit==='pentacles'?.9:.65})`}><Symbol /></g>)}
     {rank===1 && <path d="M12 37 Q20 24 29 34 Q35 17 44 26" />}
     {card.suit==='wands' && rank===2 && <circle cx="50" cy="75" r="10" />}
     {card.suit==='wands' && rank===3 && <path d="M65 81 L76 68 V81Z M60 85 H86" />}
     {card.suit==='wands' && rank===4 && <path d="M18 20 Q50 43 82 20" />}
     {card.suit==='wands' && rank===6 && <ellipse cx="75" cy="23" rx="10" ry="6" />}
+    {card.suit==='wands' && rank===7 && <path d="M12 88 L88 70" />}
+    {card.suit==='wands' && rank===10 && <path d="M28 55 Q50 63 72 55 M28 59 Q50 67 72 59" />}
+    {card.suit==='cups' && rank===1 && <><path d="M34 61 Q26 81 20 84 M42 64 Q37 83 32 89 M50 65 V92 M58 64 Q63 83 68 89 M66 61 Q74 81 80 84 M41 12 L50 18 L59 12 L50 26Z" /></>}
+    {card.suit==='cups' && rank===2 && <path d="M50 43 V82 M42 48 Q65 57 42 66 Q64 72 50 80 M58 48 Q35 57 58 66 Q36 72 50 80" />}
+    {card.suit==='cups' && rank===3 && <path d="M12 78 Q50 91 88 78" />}
+    {card.suit==='cups' && rank===4 && <path d="M67 42 Q72 24 83 34 Q93 16 97 36" />}
+    {card.suit==='cups' && rank===6 && positions.map(({x,y},i)=><Star key={i} x={x} y={y-14} r={3} n={5} />)}
+    {card.suit==='cups' && rank===7 && <><path d="M8 74 Q21 61 33 73 Q48 56 61 73 Q75 60 92 73" />{positions.map(({x,y},i)=><Star key={i} x={x} y={y-12} r={2} n={3+i%5} />)}</>}
+    {card.suit==='cups' && rank===9 && <path d="M10 66 Q50 49 90 66" />}
     {card.suit==='cups' && rank===10 && <><path d="M10 20 Q50 -9 90 20 M13 24 Q50 -1 87 24" /></>}
     {card.suit==='cups' && rank===8 && <><Moon /><path d="M58 75 Q85 83 78 96" /></>}
     {card.suit==='swords' && rank===3 && <path d="M50 79 L25 53 Q15 29 36 34 L50 45 L64 34 Q85 29 75 53Z" />}
     {card.suit==='swords' && rank===6 && <path d="M12 73 H88 L76 87 H24Z M10 94 Q30 86 50 94 Q70 86 90 94" />}
     {card.suit==='swords' && rank===4 && <Arch />}
+    {card.suit==='swords' && [2,9].includes(rank) && <Moon />}
+    {card.suit==='swords' && rank===3 && <path d="M18 10 L14 22 M30 8 L26 20 M70 8 L66 20 M82 10 L78 22" />}
+    {card.suit==='swords' && rank===5 && <path d="M12 17 L25 23 L36 15 L50 21 L65 13 L85 22" />}
+    {card.suit==='swords' && rank===8 && <circle cx="50" cy="58" r="5" />}
     {card.suit==='swords' && rank===10 && <><Horizon /><Sun y={83} r={6} /></>}
     {card.suit==='pentacles' && [3,5].includes(rank) && <Arch />}
+    {card.suit==='pentacles' && rank===1 && <path d="M25 94 Q50 73 75 94" />}
+    {card.suit==='pentacles' && rank===2 && <path d="M50 50 C5 5 0 93 50 50 C100 5 95 93 50 50Z" />}
+    {card.suit==='pentacles' && rank===5 && [12,30,70,88].map((x,i)=><circle key={i} cx={x} cy={14+i*22} r="1" />)}
+    {card.suit==='pentacles' && rank===9 && <path d="M77 17 Q85 27 91 15 M85 22 L88 32" />}
+    {card.suit==='pentacles' && rank===10 && <path d="M50 8 L25 23 L75 23 L50 38 L25 51 L75 51 L50 64 L25 77 L75 77 L50 92 M50 8 V92" opacity=".4" />}
     {card.suit==='pentacles' && [7,9].includes(rank) && <path d="M12 91 Q32 66 12 46 Q2 25 22 13" />}
     {card.suit==='pentacles' && rank===6 && <path d="M50 64 V88 M38 71 H62 M38 71 L30 83 H46Z M62 71 L54 83 H70Z" />}
   </>;
