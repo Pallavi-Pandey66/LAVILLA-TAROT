@@ -72,9 +72,9 @@ function AuthPage() {
 
   const google = async () => {
     setError(null);
-    const { error } = await getSupabase().auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: returnUrl() },
+    const { lovable } = await import("@/integrations/lovable/index");
+    const { error } = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: returnUrl(),
     });
     if (error) setError("Google sign-in is not available right now. Please use your email instead.");
   };

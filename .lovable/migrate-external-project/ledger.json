@@ -1,0 +1,6 @@
+[
+{"capability":"code","source":"archive","outcome":"migrate","status":"done","next_action":null},
+{"capability":"schema+card records","source":"migration","outcome":"migrate","status":"done","next_action":null},
+{"capability":"auth (magic link + Google)","source":"old backend","outcome":"migrate","status":"done","next_action":null},
+{"capability":"existing users/readings/favorites","source":"old backend","outcome":"migrate","status":"pending","next_action":"user export of users, readings, favorites"}
+]
