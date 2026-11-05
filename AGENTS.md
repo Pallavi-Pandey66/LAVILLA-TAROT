@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep `db/schema.sql` as a standalone external-backend setup script, not a Cloud migration; test its signup triggers and RLS locally without changing the connected backend.
+- Use the lazy external browser client in `src/lib/supabase.ts` for app auth and user data, with isolated session storage and external OAuth; generated Cloud integration files remain managed and unused by these flows.
