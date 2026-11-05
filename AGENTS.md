@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep `db/schema.sql` as a standalone external-backend setup script, not a Cloud migration; test its signup triggers and RLS locally without changing the connected backend.
