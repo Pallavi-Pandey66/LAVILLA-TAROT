@@ -13,7 +13,9 @@ Run `db/schema.sql` once in your separate project's SQL editor before allowing s
 
 SQL does not enable email delivery or OAuth providers. In your separate project, enable email sign-in/magic links, configure the site URL and allowed `/auth` callback URLs, and configure Google if needed. Leave email confirmation enabled. The current app uses passwordless email links, not a password signup form.
 
-This Lovable app **still connects to Lovable Cloud**; this script does not switch its connection. To use it in a separately hosted copy, configure that copy's browser client with your external project's URL and publishable key. Never put a service-role or secret key in browser code. Replace the Lovable-managed Google flow in that separate copy with the external project's OAuth flow; callback URLs must return to its public `/auth` page.
+The app now connects to your external project at `https://jfxwenzpxhrpacgodrer.supabase.co` through its own browser client. The generated Lovable Cloud files remain untouched and are not used for app sign-in or saved data. Sessions use a separate storage key, so Cloud sessions cannot be mistaken for external accounts. Never put a service-role or secret key in browser code. Google now uses your external project's OAuth flow and returns to the public `/auth` page.
+
+Connection checks found email enabled, signups allowed, email confirmation required, and Google disabled. The `profiles` table was missing. **Run `db/schema.sql` in your external project's SQL editor**, then add `https://id-preview--d818e48b-4b34-4404-8d54-7fba8410c687.lovable.app/auth*` to allowed redirect URLs (and your published domain's equivalent when published). Set the site URL to the app's public origin. Configure and enable Google in that external project if you want Google sign-in; its Google provider callback is `https://jfxwenzpxhrpacgodrer.supabase.co/auth/v1/callback`. The app cannot change these settings with a publishable key.
 
 Example for the external copy's configured client:
 
@@ -39,4 +41,4 @@ const { data: profile, error: profileError } = await supabase
 if (profileError) throw profileError;
 ```
 
-Local SQL tests verify profile creation, backfill, reruns, and user isolation. Authentication settings, email delivery, and sign-in against your separate hosted project remain unverified until it is configured.
+Local SQL tests verify profile creation, backfill, reruns, and user isolation. Public authentication settings were checked; actual email delivery, callback allowlisting, and signed-in profile/readings access remain unverified. Existing Cloud users and saved readings are not copied automatically.

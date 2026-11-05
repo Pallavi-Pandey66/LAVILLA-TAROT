@@ -1,7 +1,21 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { externalBackend, externalBackendFetch } from "./external-backend";
 
-/** Lovable Cloud browser client. Row Level Security protects every table. */
+let client: SupabaseClient | undefined;
+
+/** External browser client, initialized only from effects or event handlers. */
 export function getSupabase(): SupabaseClient {
-  return supabase as unknown as SupabaseClient;
+  if (!client) {
+    client = createClient(externalBackend.url, externalBackend.publishableKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: externalBackend.storageKey,
+        flowType: "implicit",
+      },
+      global: { fetch: externalBackendFetch },
+    });
+  }
+  return client;
 }

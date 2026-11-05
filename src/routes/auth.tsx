@@ -44,6 +44,7 @@ function AuthPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -60,7 +61,10 @@ function AuthPage() {
     setError(null);
     const { error } = await getSupabase().auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: returnUrl() },
+      options: {
+        emailRedirectTo: returnUrl(),
+        data: { display_name: displayName.trim() },
+      },
     });
     if (error) {
       setStatus("error");
@@ -72,9 +76,9 @@ function AuthPage() {
 
   const google = async () => {
     setError(null);
-    const { lovable } = await import("@/integrations/lovable/index");
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: returnUrl(),
+    const { error } = await getSupabase().auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: returnUrl() },
     });
     if (error) setError("Google sign-in is not available right now. Please use your email instead.");
   };
@@ -105,6 +109,11 @@ function AuthPage() {
                 Sign in to save readings and keep your journal. No password needed.
               </p>
               <form onSubmit={sendLink} className="mt-10 space-y-3 text-left">
+                <label htmlFor="display-name" className="eyebrow block text-[0.62rem]">
+                  Display name (optional)
+                </label>
+                <Input id="display-name" autoComplete="nickname" value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" />
                 <label htmlFor="email" className="eyebrow block text-[0.62rem]">
                   Email
                 </label>
