@@ -49,11 +49,27 @@ function AuthPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: safePath(redirect), replace: true });
+    if (!loading && user) {
+      const stored = window.localStorage.getItem("lumina.auth.redirect") ?? undefined;
+      window.localStorage.removeItem("lumina.auth.redirect");
+      navigate({ to: safePath(redirect ?? stored), replace: true });
+    }
   }, [user, loading, redirect, navigate]);
 
-  const returnUrl = () =>
-    `${window.location.origin}/auth?redirect=${encodeURIComponent(safePath(redirect))}`;
+  // Surface errors returned in the link (expired or already-used link).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.slice(1) || window.location.search);
+    const desc = params.get("error_description");
+    if (desc) {
+      setError(`Sign-in link problem: ${desc.replace(/\+/g, " ")}. Please request a new link.`);
+    }
+  }, []);
+
+  // A plain /auth return address is easiest to allow in the backend's redirect list.
+  const returnUrl = () => {
+    window.localStorage.setItem("lumina.auth.redirect", safePath(redirect));
+    return `${window.location.origin}/auth`;
+  };
 
   const sendLink = async (e: React.FormEvent) => {
     e.preventDefault();
