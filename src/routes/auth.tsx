@@ -84,7 +84,11 @@ function AuthPage() {
     });
     if (error) {
       setStatus("error");
-      setError("We could not send your link. Please check the address and try again.");
+      setError(
+        error.status === 429 || /rate limit/i.test(error.message)
+          ? "Too many sign-in emails were sent recently. Please wait about an hour and try again."
+          : `We could not send your link: ${error.message}`,
+      );
     } else {
       setStatus("sent");
     }
@@ -96,7 +100,13 @@ function AuthPage() {
       provider: "google",
       options: { redirectTo: returnUrl() },
     });
-    if (error) setError("Google sign-in is not available right now. Please use your email instead.");
+    if (error) {
+      setError(
+        /not enabled|unsupported provider/i.test(error.message)
+          ? "Google sign-in hasn't been turned on for this app yet. Please use your email instead."
+          : `Google sign-in failed: ${error.message}`,
+      );
+    }
   };
 
   return (
