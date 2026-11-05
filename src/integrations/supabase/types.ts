@@ -14,7 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cards: {
+        Row: {
+          id: string
+          keywords: string[]
+          message: string
+          motif: string
+          name: string
+          number: number
+          reflection: string
+          slug: string
+          theme: string
+        }
+        Insert: {
+          id?: string
+          keywords?: string[]
+          message: string
+          motif: string
+          name: string
+          number: number
+          reflection: string
+          slug: string
+          theme: string
+        }
+        Update: {
+          id?: string
+          keywords?: string[]
+          message?: string
+          motif?: string
+          name?: string
+          number?: number
+          reflection?: string
+          slug?: string
+          theme?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          card_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string
+          user_id?: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      readings: {
+        Row: {
+          card_ids: string[]
+          created_at: string
+          id: string
+          intention: string | null
+          note: string | null
+          spread_type: string
+          user_id: string
+        }
+        Insert: {
+          card_ids: string[]
+          created_at?: string
+          id?: string
+          intention?: string | null
+          note?: string | null
+          spread_type: string
+          user_id?: string
+        }
+        Update: {
+          card_ids?: string[]
+          created_at?: string
+          id?: string
+          intention?: string | null
+          note?: string | null
+          spread_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
