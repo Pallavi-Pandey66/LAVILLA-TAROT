@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const sql = readFileSync(new URL("../../db/schema.sql", import.meta.url), "utf8");
+const tarotSql = readFileSync(new URL("../../db/tarot.sql", import.meta.url), "utf8");
 const alice = "00000000-0000-4000-8000-000000000001";
 const bob = "00000000-0000-4000-8000-000000000002";
 let db: PGlite;
@@ -55,5 +56,14 @@ describe("external backend schema", () => {
     await db.exec("set role anon;");
     try { await expect(db.query("select * from public.profiles")).rejects.toThrow(/permission denied/); }
     finally { await db.exec("reset role;"); }
+  });
+
+  it("adds 78 tarot records with exact order and preserves all oracle cards on rerun", async () => {
+    await db.exec(tarotSql);
+    await db.exec(tarotSql);
+    expect((await db.query("select deck, count(*)::int as count from public.cards group by deck order by deck")).rows)
+      .toEqual([{ deck: "oracle", count: 36 }, { deck: "tarot", count: 78 }]);
+    expect((await db.query("select name, sort_order, numeral from public.cards where deck = 'tarot' order by sort_order limit 1")).rows)
+      .toEqual([{ name: "The Fool", sort_order: 0, numeral: "0" }]);
   });
 });

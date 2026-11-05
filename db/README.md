@@ -2,6 +2,8 @@
 
 Run `db/schema.sql` once in your separate project's SQL editor before allowing signups. It creates shared tables, all 36 oracle cards, access policies, and a signup trigger. **Tables are created during setup; one profile row is created automatically for each new account.** Running the script again preserves existing rows. It targets a fresh project or one with the same table definitions; `IF NOT EXISTS` does not upgrade incompatible existing tables.
 
+After setup, run `db/tarot.sql` to add all 78 tarot cards and deck/arcana/suit/order metadata. Existing oracle IDs are preserved. Tarot uses distinct numbers 1000–1077 in the legacy unique database `number` field; actual tarot order is `sort_order` 0–77 and the display uses `numeral` (The Fool is 0). No tarot interpretations were supplied, so messages and reflection fields are intentionally empty rather than invented.
+
 ## Accounts and profiles
 
 - Supabase Auth manages accounts, sessions, passwords, and email verification; do not create your own password table.

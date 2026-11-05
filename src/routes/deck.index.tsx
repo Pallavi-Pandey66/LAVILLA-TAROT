@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { OracleCard } from "@/components/oracle/OracleCard";
 import { PageIntro, Reveal } from "@/components/site/Reveal";
-import { DECK, THEMES } from "@/data/deck";
+import { DECK, TAROT_DECK } from "@/data/catalog";
+import { DeckSelector } from "@/components/oracle/DeckSelector";
 import { useAuth } from "@/lib/auth";
 import { useFavorites } from "@/lib/journal";
 import { cn } from "@/lib/utils";
@@ -22,10 +23,10 @@ export const Route = createFileRoute("/deck/")({
       { title: "The deck — Lumina Oracle" },
       {
         name: "description",
-        content: "Explore all 36 cards of the Lumina Oracle deck, their themes, messages and reflections.",
+        content: "Explore 36 Lumina Oracle cards and the complete 78-card tarot deck, including Major Arcana and all four suits.",
       },
       { property: "og:title", content: "The deck — Lumina Oracle" },
-      { property: "og:description", content: "Thirty-six cards, each with a single iconic symbol." },
+      { property: "og:description", content: "Explore the Lumina Oracle and complete 78-card tarot decks." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -34,6 +35,9 @@ export const Route = createFileRoute("/deck/")({
 });
 
 function DeckPage() {
+  const [deckType, setDeckType] = useState<"oracle" | "tarot">("oracle");
+  const deck = deckType === "tarot" ? TAROT_DECK : DECK;
+  const themes = Array.from(new Set(deck.map((c) => c.theme)));
   const [q, setQ] = useState("");
   const [theme, setTheme] = useState("all");
   const [onlyFav, setOnlyFav] = useState(false);
@@ -42,7 +46,7 @@ function DeckPage() {
 
   const cards = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return DECK.filter((c) => {
+    return deck.filter((c) => {
       if (theme !== "all" && c.theme !== theme) return false;
       if (onlyFav && !favs.data?.has(c.id)) return false;
       if (!term) return true;
@@ -52,13 +56,14 @@ function DeckPage() {
         c.keywords.some((k) => k.toLowerCase().includes(term))
       );
     });
-  }, [q, theme, onlyFav, favs.data]);
+  }, [deck, q, theme, onlyFav, favs.data]);
 
   return (
     <div className="px-5 pb-10 pt-32 sm:px-8">
-      <PageIntro eyebrow="Thirty-six cards" title="The deck">
+      <PageIntro eyebrow={deckType === "tarot" ? "Seventy-eight cards" : "Thirty-six cards"} title="The deck">
         Each card holds a single symbol. Wander through them, or search for what you need.
       </PageIntro>
+      <div className="mt-8"><DeckSelector value={deckType} onChange={(value) => { setDeckType(value); setTheme("all"); }} /></div>
 
       <Reveal className="mx-auto mt-14 flex max-w-3xl flex-col gap-3 sm:flex-row">
         <label className="relative flex-1">
@@ -81,7 +86,7 @@ function DeckPage() {
           </SelectTrigger>
           <SelectContent className="max-h-80 border-hairline bg-surface">
             <SelectItem value="all">All themes</SelectItem>
-            {THEMES.map((t) => (
+            {themes.map((t) => (
               <SelectItem key={t} value={t} className="capitalize">
                 {t}
               </SelectItem>

@@ -4,6 +4,11 @@
  * readings and favorites reference these ids directly.
  */
 export type OracleCardData = {
+  deck?: "oracle" | "tarot";
+  arcana?: "major" | "minor";
+  suit?: "wands" | "cups" | "swords" | "pentacles";
+  sort_order?: number;
+  numeral?: string;
   id: string;
   number: number;
   slug: string;

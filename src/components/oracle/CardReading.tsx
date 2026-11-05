@@ -21,7 +21,7 @@ export function CardReading({
     <div className={cn(align === "center" && "text-center", className)}>
       <p className="eyebrow">
         {label ? `${label} · ` : ""}
-        {toRoman(card.number)}
+        {card.numeral ?? toRoman(card.number)}
       </p>
       <H className="mt-3 text-4xl text-champagne sm:text-5xl">{card.name}</H>
       <ul
@@ -38,14 +38,14 @@ export function CardReading({
           </li>
         ))}
       </ul>
-      <div className={cn("hairline-rule my-7 w-24", align === "center" && "mx-auto")} />
+      {card.message && <div className={cn("hairline-rule my-7 w-24", align === "center" && "mx-auto")} />}
       <p className="text-lg leading-relaxed text-champagne/85">{card.message}</p>
-      <div className="mt-8">
+      {card.reflection && <div className="mt-8">
         <p className="eyebrow text-[0.62rem]">Reflection</p>
         <p className="mt-3 font-display text-2xl italic leading-snug text-gold">
           {card.reflection}
         </p>
-      </div>
+      </div>}
     </div>
   );
 }
