@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { OracleCard } from "@/components/oracle/OracleCard";
 import { PageIntro, Reveal } from "@/components/site/Reveal";
-import { DECK_BY_ID } from "@/data/deck";
+import { CARDS_BY_ID } from "@/data/catalog";
 import { useAuth } from "@/lib/auth";
 import { useDeleteReading, useReadings, useUpdateNote, type Reading } from "@/lib/journal";
 import { SPREADS } from "@/lib/oracle";
@@ -135,7 +135,7 @@ function ReadingEntry({ reading }: { reading: Reading }) {
   const update = useUpdateNote();
   const del = useDeleteReading();
   const cards = reading.card_ids
-    .map((id) => DECK_BY_ID[id])
+    .map((id) => CARDS_BY_ID[id])
     .filter((c): c is NonNullable<typeof c> => !!c);
   const positions = SPREADS[reading.spread_type]?.positions ?? [];
   const date = new Date(reading.created_at);

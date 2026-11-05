@@ -9,6 +9,8 @@ import { CardReading } from "@/components/oracle/CardReading";
 import { FlipCard } from "@/components/oracle/FlipCard";
 import { PageIntro } from "@/components/site/Reveal";
 import { DECK, type OracleCardData } from "@/data/deck";
+import { TAROT_DECK } from "@/data/tarot";
+import { DeckSelector } from "@/components/oracle/DeckSelector";
 import { useAuth } from "@/lib/auth";
 import { stashPendingReading, useSaveReading } from "@/lib/journal";
 import { SPREADS, shuffle, toRoman, type SpreadType } from "@/lib/oracle";
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/draw")({
       {
         name: "description",
         content:
-          "Choose a single card or a Past, Present, Future spread, set an intention and draw from the Lumina Oracle deck.",
+          "Choose a single card or a Past, Present, Future spread and draw from the Lumina Oracle or 78-card tarot deck.",
       },
       { property: "og:title", content: "Draw a card — Lumina Oracle" },
       {
@@ -78,6 +80,7 @@ function StepMarks({ step }: { step: Step }) {
 }
 
 function DrawPage() {
+  const [deckType, setDeckType] = useState<"oracle" | "tarot">("oracle");
   const [step, setStep] = useState<Step>("spread");
   const [spread, setSpread] = useState<SpreadType>("single");
   const [intention, setIntention] = useState("");
@@ -95,6 +98,7 @@ function DrawPage() {
   return (
     <div className="px-5 pb-10 pt-32 sm:px-8">
       <PageIntro eyebrow="The ritual" title="Draw a card" />
+      {step === "spread" && <div className="mt-8"><DeckSelector value={deckType} onChange={setDeckType} /></div>}
       <div className="mt-10">
         <StepMarks step={step} />
       </div>
@@ -123,6 +127,7 @@ function DrawPage() {
           {step === "choose" && (
             <Panel key={`choose-${round}`}>
               <ChooseStep
+                sourceDeck={deckType === "tarot" ? TAROT_DECK : DECK}
                 spread={spread}
                 onDone={(cards) => {
                   setDrawn(cards);
@@ -265,16 +270,18 @@ function IntentionStep({
 }
 
 function ChooseStep({
+  sourceDeck,
   spread,
   onDone,
 }: {
+  sourceDeck: OracleCardData[];
   spread: SpreadType;
   onDone: (cards: OracleCardData[]) => void;
 }) {
   const reduce = useReducedMotion();
   const positions = SPREADS[spread].positions;
   const need = positions.length;
-  const deck = useMemo(() => shuffle(DECK), []);
+  const deck = useMemo(() => shuffle(sourceDeck), [sourceDeck]);
   const [phase, setPhase] = useState<"shuffle" | "fan">(reduce ? "fan" : "shuffle");
   const [picked, setPicked] = useState<number[]>([]);
 

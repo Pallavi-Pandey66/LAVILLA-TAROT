@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { CardReading } from "@/components/oracle/CardReading";
 import { OracleCard } from "@/components/oracle/OracleCard";
 import { Reveal } from "@/components/site/Reveal";
-import { DECK, DECK_BY_SLUG } from "@/data/deck";
+import { DECK, TAROT_DECK, CARDS_BY_SLUG } from "@/data/catalog";
 import { useAuth } from "@/lib/auth";
 import { useFavorites, useToggleFavorite } from "@/lib/journal";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/deck/$slug")({
   loader: ({ params }) => {
-    const card = DECK_BY_SLUG[params.slug];
+    const card = CARDS_BY_SLUG[params.slug];
     if (!card) throw notFound();
     return { card };
   },
@@ -22,9 +22,9 @@ export const Route = createFileRoute("/deck/$slug")({
     return {
       meta: [
         { title },
-        { name: "description", content: card.message },
+        { name: "description", content: card.message || `${card.name}: ${card.motif}.` },
         { property: "og:title", content: title },
-        { property: "og:description", content: card.message },
+        { property: "og:description", content: card.message || `${card.name}: ${card.motif}.` },
         { property: "og:type", content: "article" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
@@ -63,9 +63,11 @@ function BookmarkToggle({ cardId }: { cardId: string }) {
 
 function CardDetail() {
   const { card } = Route.useLoaderData();
-  const idx = DECK.findIndex((c) => c.id === card.id);
-  const prev = DECK[(idx - 1 + DECK.length) % DECK.length]!;
-  const next = DECK[(idx + 1) % DECK.length]!;
+  const deck = card.deck === "tarot" ? TAROT_DECK : DECK;
+  const idx = deck.findIndex((c) => c.id === card.id);
+  const prev = deck[(idx - 1 + deck.length) % deck.length];
+  const next = deck[(idx + 1) % deck.length];
+  if (!prev || !next) return null;
 
   return (
     <div className="px-5 pb-10 pt-32 sm:px-8">
