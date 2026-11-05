@@ -10,33 +10,102 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DailyRouteImport } from './routes/daily'
+import { Route as DrawRouteImport } from './routes/draw'
+import { Route as JournalRouteImport } from './routes/journal'
+import { Route as DeckIndexRouteImport } from './routes/deck.index'
+import { Route as DeckSlugRouteImport } from './routes/deck.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DailyRoute = DailyRouteImport.update({
+  id: '/daily',
+  path: '/daily',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrawRoute = DrawRouteImport.update({
+  id: '/draw',
+  path: '/draw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeckIndexRoute = DeckIndexRouteImport.update({
+  id: '/deck/',
+  path: '/deck/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeckSlugRoute = DeckSlugRouteImport.update({
+  id: '/deck/$slug',
+  path: '/deck/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/daily': typeof DailyRoute
+  '/draw': typeof DrawRoute
+  '/journal': typeof JournalRoute
+  '/deck/$slug': typeof DeckSlugRoute
+  '/deck/': typeof DeckIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/daily': typeof DailyRoute
+  '/draw': typeof DrawRoute
+  '/journal': typeof JournalRoute
+  '/deck/$slug': typeof DeckSlugRoute
+  '/deck': typeof DeckIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/daily': typeof DailyRoute
+  '/draw': typeof DrawRoute
+  '/journal': typeof JournalRoute
+  '/deck/$slug': typeof DeckSlugRoute
+  '/deck/': typeof DeckIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/auth' | '/daily' | '/draw' | '/journal' | '/deck/$slug' | '/deck/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/daily' | '/draw' | '/journal' | '/deck/$slug' | '/deck'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/daily'
+    | '/draw'
+    | '/journal'
+    | '/deck/$slug'
+    | '/deck/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  DailyRoute: typeof DailyRoute
+  DrawRoute: typeof DrawRoute
+  JournalRoute: typeof JournalRoute
+  DeckSlugRoute: typeof DeckSlugRoute
+  DeckIndexRoute: typeof DeckIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +117,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daily': {
+      id: '/daily'
+      path: '/daily'
+      fullPath: '/daily'
+      preLoaderRoute: typeof DailyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/draw': {
+      id: '/draw'
+      path: '/draw'
+      fullPath: '/draw'
+      preLoaderRoute: typeof DrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deck/': {
+      id: '/deck/'
+      path: '/deck'
+      fullPath: '/deck/'
+      preLoaderRoute: typeof DeckIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deck/$slug': {
+      id: '/deck/$slug'
+      path: '/deck/$slug'
+      fullPath: '/deck/$slug'
+      preLoaderRoute: typeof DeckSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  DailyRoute: DailyRoute,
+  DrawRoute: DrawRoute,
+  JournalRoute: JournalRoute,
+  DeckSlugRoute: DeckSlugRoute,
+  DeckIndexRoute: DeckIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
