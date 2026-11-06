@@ -12,3 +12,4 @@
 - Keep `db/schema.sql` as a standalone external-backend setup script, not a Cloud migration; test its signup triggers and RLS locally without changing the connected backend.
 - Use the lazy external browser client in `src/lib/supabase.ts` for app auth and user data, with isolated session storage and external OAuth; generated Cloud integration files remain managed and unused by these flows.
 - Keep oracle daily selection isolated; use the shared catalog for browsing and journal lookup, with distinct stable tarot IDs and slugs to preserve historical oracle readings.
+- Generate the app-shell worker with vite-plugin-pwa; register only through the guarded browser module, use NetworkFirst documents and NetworkOnly backend/auth, and never precache SSR HTML to preserve fresh sessions and safe previews.

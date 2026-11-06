@@ -20,6 +20,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Starfield } from "@/components/site/Starfield";
 import { CardBack } from "@/components/oracle/CardBack";
+import { registerAppWorker } from "@/lib/pwa";
 
 function NotFoundComponent() {
   return (
@@ -93,6 +94,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/lumina-192.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -122,6 +125,9 @@ function PendingSync() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => {
+    void registerAppWorker().catch((error: unknown) => console.warn("Lumina offline support unavailable", error));
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
